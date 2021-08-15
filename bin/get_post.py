@@ -1,7 +1,8 @@
 import requests
 import json
+import sys
 
-URL = "https://www.reddit.com/r/AskReddit/comments/p4r8u9/what_is_old_but_that_people_still_use/"
+URL = sys.argv[1]
 
 # get cookie for request
 a_session = requests.Session()
@@ -30,22 +31,26 @@ models_json = comments_json['models']
 # convert comments to json array
 
 comments_arr = []
+error_count = 0
 
 for comment_key in models_json.keys():
-    comment_json = models_json[comment_key]
-    comment_dict = {}
-    comment_dict['id'] = comment_json['id']
-    comment_dict['author'] = comment_json['author']
-    comment_dict['parentId'] = comment_json['parentId']
-    comment_dict['score'] = comment_json['score']
-    media_json = comment_json['media']
-    rtc_json = media_json['richtextContent']
-    document_json = rtc_json['document']
-    c_arr = document_json[0]
-    c_json = c_arr['c']
-    e_arr = c_json[0]
-    comment_dict['text'] = e_arr['t']
-    comments_arr.append(comment_dict)
+    try:
+        comment_json = models_json[comment_key]
+        comment_dict = {}
+        comment_dict['id'] = comment_json['id']
+        comment_dict['author'] = comment_json['author']
+        comment_dict['parentId'] = comment_json['parentId']
+        comment_dict['score'] = comment_json['score']
+        media_json = comment_json['media']
+        rtc_json = media_json['richtextContent']
+        document_json = rtc_json['document']
+        c_arr = document_json[0]
+        c_json = c_arr['c']
+        e_arr = c_json[0]
+        comment_dict['text'] = e_arr['t']
+        comments_arr.append(comment_dict)
+    except:
+        error_count = error_count + 1
 
 # output comment array
 
